@@ -1,14 +1,9 @@
-#!/bin/bash
+#(Hechando andar el proyecto)
 
-# Script para construir el proyecto
-
-# Ir al directorio raíz del proyecto
-cd ..
-
-# Ejecutar make
+#Ejecutar make
 make
 
-# Verificar si la compilación fue exitosa
+#Leve manejo de errores
 if [ $? -eq 0 ]; then
     echo "Compilación exitosa. El ejecutable está en Workbench/inverted_index"
 else

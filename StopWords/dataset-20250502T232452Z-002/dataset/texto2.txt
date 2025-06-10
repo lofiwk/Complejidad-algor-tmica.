@@ -1,0 +1,15 @@
+far 
+near 
+here 
+there 
+inside 
+outside 
+above 
+below 
+behind 
+ahead 
+together 
+apart 
+ago 
+yet 
+still 

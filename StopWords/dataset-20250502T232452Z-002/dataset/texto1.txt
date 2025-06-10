@@ -1,0 +1,13 @@
+hard 
+easy 
+strong 
+weak 
+open 
+close 
+hot 
+cold 
+warm 
+cool 
+light 
+dark 
+fast 
