@@ -4,7 +4,7 @@
 
 // --- Estructuras básicas ---
 
-// Ndo para almacenar IDs de documentos
+// Nodo para almacenar IDs de documentos
 typedef struct DocNode {
     int doc_id;
     struct DocNode* next;
@@ -48,6 +48,25 @@ int str_equals(const char* a, const char* b) {
     }
     return a[i] == b[i] ? 0 : 1;
 }
+
+// Revisa si el string 'str' contiene el substring 'substr'
+int str_contains(const char* str, const char* substr) {
+    int i = 0, j = 0;
+    while (str[i]) {
+        if (str[i] == substr[0]) {
+            j = 0;
+            while (substr[j] && str[i + j] == substr[j]) {
+                j++;
+            }
+            if (substr[j] == '\0') {
+                return 1; // encontrado
+            }
+        }
+        i++;
+    }
+    return 0; // no encontrado
+}
+
 
 // Crea una copia de una cadena
 char* str_copy(const char* src) {
@@ -243,22 +262,37 @@ int split_words(char* input, char* words[], int max_words) {
     return count;
 }
 
-// Busca múltiples palabras en el índice
 DocNode* search_multiple_words(InvertedIndex* index, char** words, int num_words) {
     if (num_words == 0) return NULL;
-    DocNode* result = search_word(index, words[0]);
-    if (!result) return NULL;
+
+    DocNode* base = search_word(index, words[0]);
+    if (!base) return NULL;
+
+    // Copiar base a una lista temporal para no alterar la original
+    DocNode* result = NULL;
+    DocNode** tail = &result;
+    for (DocNode* p = base; p != NULL; p = p->next) {
+        DocNode* n = malloc(sizeof(DocNode));
+        n->doc_id = p->doc_id;
+        n->next = NULL;
+        *tail = n;
+        tail = &n->next;
+    }
+
     for (int i = 1; i < num_words; i++) {
         DocNode* word_docs = search_word(index, words[i]);
         if (!word_docs) {
             free_doc_list(result);
             return NULL;
         }
+
         DocNode* new_result = intersect_doc_lists(result, word_docs);
-        free_doc_list(result);
+        free_doc_list(result); // ahora sí es seguro
         result = new_result;
+
         if (!result) return NULL;
     }
+
     return result;
 }
 
@@ -324,18 +358,59 @@ int main(int argc, char* argv[]) {
     printf("Procesando archivos...\n");
     load_stopwords(&stopwords, stopwords_path);
 
-    // Procesar varios archivos con doc_id únicos
-    int first_file_arg = 2; // argv[1] = ruta a las stompwords, argv[2] en adelante = los archivos con texto normal (texto1.txt y texto2.txt)
+        // Procesar varios archivos con doc_id únicos
+    int first_file_arg = 2;
+    int doc_id = 1;
+    
+    //oficial
+
+    //     if (argc > first_file_arg) {
+    //     for (int i = first_file_arg; i < argc; i++) {
+    //         if (str_equals(argv[i], stopwords_path) == 0) continue;
+
+    //         printf("Procesando archivo: %s (doc_id: %d)\n", argv[i], doc_id);
+    //         process_file(&index, &stopwords, argv[i], doc_id);
+    //         doc_id++;
+    //     }
+
+    //     if (doc_id == 1) {
+    //         printf("No se procesó ningún documento válido (solo stopwords?).\n");
+    //         return 1;
+    //     }
+
+    // } else {
+    //     printf("Error: No se proporcionaron archivos para procesar.\n");
+    //     printf("Uso: %s [ruta_stopwords] archivo1 [archivo2...]\n", argv[0]);
+    //     return 1;
+    // }
+
+    //prueba
+
     if (argc > first_file_arg) {
         for (int i = first_file_arg; i < argc; i++) {
-            printf("Procesando archivo: %s (doc_id: %d)\n", argv[i], i - first_file_arg + 1);
-            process_file(&index, &stopwords, argv[i], i - first_file_arg + 1);
+            // Ignorarstopwords y analiza solo Log-Queries.dat
+            if (str_equals(argv[i], "StopWords/dataset-20250502T232452Z-002/dataset/stopwords_english.dat.txt") == 0) {
+                continue; // saltar archivo de stopwords
+            }
+
+            if (str_contains(argv[i], "texto1.txt") || str_contains(argv[i], "texto2.txt")) {
+                printf("Procesando archivo de consultas: %s (doc_id: %d)\n", argv[i], doc_id);
+                process_file(&index, &stopwords, argv[i], doc_id);
+                doc_id++;
+            }
         }
+
+        if (doc_id == 1) {
+            printf("No se encontraron archivos válidos para procesar.\n");
+            return 1;
+        }
+
     } else {
         printf("Error: No se proporcionaron archivos para procesar.\n");
         printf("Uso: %s [ruta_stopwords] archivo1 archivo2 ...\n", argv[0]);
         return 1;
     }
+
 
     printf("Procesamiento completado. Listo para buscar.\n");
     printf("Ingrese las palabras a buscar (separadas por espacios con favor): ");
@@ -394,9 +469,9 @@ int main(int argc, char* argv[]) {
         printf("No se encontraron documentos que contengan todas las palabras.\n");
     }
 
-    // Mostrar índice generado
-    printf("\n--- Índice construido ---\n");
-    print_index(&index);
+    // // Mostrar índice generado
+    // printf("\n--- Índice construido ---\n");
+    // print_index(&index);
 
     // Liberar memoria
     free_index(&index);

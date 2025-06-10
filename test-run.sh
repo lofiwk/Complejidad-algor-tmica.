@@ -20,6 +20,4 @@ echo ""
 ./Workbench/inverted_index \
   StopWords/dataset-20250502T232452Z-002/dataset/stopwords_english.dat.txt \
   StopWords/dataset-20250502T232452Z-002/dataset/texto1.txt \
-  StopWords/dataset-20250502T232452Z-002/dataset/texto2.txt <<EOF
-hard cold dark
-EOF
+  StopWords/dataset-20250502T232452Z-002/dataset/texto2.txt
