@@ -362,54 +362,54 @@ int main(int argc, char* argv[]) {
     int first_file_arg = 2;
     int doc_id = 1;
     
-    //oficial
+    // oficial
 
-    //     if (argc > first_file_arg) {
-    //     for (int i = first_file_arg; i < argc; i++) {
-    //         if (str_equals(argv[i], stopwords_path) == 0) continue;
-
-    //         printf("Procesando archivo: %s (doc_id: %d)\n", argv[i], doc_id);
-    //         process_file(&index, &stopwords, argv[i], doc_id);
-    //         doc_id++;
-    //     }
-
-    //     if (doc_id == 1) {
-    //         printf("No se procesó ningún documento válido (solo stopwords?).\n");
-    //         return 1;
-    //     }
-
-    // } else {
-    //     printf("Error: No se proporcionaron archivos para procesar.\n");
-    //     printf("Uso: %s [ruta_stopwords] archivo1 [archivo2...]\n", argv[0]);
-    //     return 1;
-    // }
-
-    //prueba
-
-    if (argc > first_file_arg) {
+        if (argc > first_file_arg) {
         for (int i = first_file_arg; i < argc; i++) {
-            // Ignorarstopwords y analiza solo Log-Queries.dat
-            if (str_equals(argv[i], "StopWords/dataset-20250502T232452Z-002/dataset/stopwords_english.dat.txt") == 0) {
-                continue; // saltar archivo de stopwords
-            }
+            if (str_equals(argv[i], stopwords_path) == 0) continue;
 
-            if (str_contains(argv[i], "texto1.txt") || str_contains(argv[i], "texto2.txt")) {
-                printf("Procesando archivo de consultas: %s (doc_id: %d)\n", argv[i], doc_id);
-                process_file(&index, &stopwords, argv[i], doc_id);
-                doc_id++;
-            }
+            printf("Procesando archivo: %s (doc_id: %d)\n", argv[i], doc_id);
+            process_file(&index, &stopwords, argv[i], doc_id);
+            doc_id++;
         }
 
         if (doc_id == 1) {
-            printf("No se encontraron archivos válidos para procesar.\n");
+            printf("No se procesó ningún documento válido (solo stopwords?).\n");
             return 1;
         }
 
     } else {
         printf("Error: No se proporcionaron archivos para procesar.\n");
-        printf("Uso: %s [ruta_stopwords] archivo1 archivo2 ...\n", argv[0]);
+        printf("Uso: %s [ruta_stopwords] archivo1 [archivo2...]\n", argv[0]);
         return 1;
     }
+
+    //prueba
+
+    // if (argc > first_file_arg) {
+    //     for (int i = first_file_arg; i < argc; i++) {
+    //         // Ignorarstopwords y analiza solo Log-Queries.dat
+    //         if (str_equals(argv[i], "StopWords/dataset-20250502T232452Z-002/dataset/stopwords_english.dat.txt") == 0) {
+    //             continue; // saltar archivo de stopwords
+    //         }
+
+    //         if (str_contains(argv[i], "texto1.txt") || str_contains(argv[i], "texto2.txt")) {
+    //             printf("Procesando archivo de consultas: %s (doc_id: %d)\n", argv[i], doc_id);
+    //             process_file(&index, &stopwords, argv[i], doc_id);
+    //             doc_id++;
+    //         }
+    //     }
+
+    //     if (doc_id == 1) {
+    //         printf("No se encontraron archivos válidos para procesar.\n");
+    //         return 1;
+    //     }
+
+    // } else {
+    //     printf("Error: No se proporcionaron archivos para procesar.\n");
+    //     printf("Uso: %s [ruta_stopwords] archivo1 archivo2 ...\n", argv[0]);
+    //     return 1;
+    // }
 
 
     printf("Procesamiento completado. Listo para buscar.\n");
